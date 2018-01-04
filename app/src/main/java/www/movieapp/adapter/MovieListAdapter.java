@@ -40,24 +40,30 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
 
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
-        MovieDB movieDB = movieDBList.get(position);
-        final String moviePoster = movieDB.getImagePath();
-        final String movieTitle = movieDB.getMovieTitle();
-        final String movieSynopsis = movieDB.getMovieSynopsis();
-        final String movieReleaseDate = movieDB.getMovieReleaseDate();
-        final String movieRating = movieDB.getMovieRating();
+        final MovieDB MovieDB = movieDBList.get(position);
+        final String moviePoster = MovieDB.getMoviePosters();
+        final String movieId = MovieDB.getMovieId();
+
         Picasso.with(context).load(Constant.POSTER_PATH + moviePoster).into(holder.imageViewMoviePoster);
         holder.imageViewMoviePoster.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentMovieDetailedView=new Intent();
+               /* Intent intentMovieDetailedView=new Intent();
                 intentMovieDetailedView.putExtra(Constant.MOVIE_TITLE,movieTitle);
                 intentMovieDetailedView.putExtra(Constant.MOVIE_IMAGE_POSTER,moviePoster);
                 intentMovieDetailedView.putExtra(Constant.MOVIE_SYNOPSIS,movieSynopsis);
                 intentMovieDetailedView.putExtra(Constant.MOVIE_RATING,movieRating);
                 intentMovieDetailedView.putExtra(Constant.MOVIE_ReleaseDate,movieReleaseDate);
                 intentMovieDetailedView.setClass(context, MovieDetailedView.class);
-                context.startActivity(intentMovieDetailedView);
+                context.startActivity(intentMovieDetailedView);*/
+                Intent intent=new Intent(context, MovieDetailedView.class);
+                intent.putExtra("movieId",movieId);
+//                intent.putExtra("moviePoster",moviePoster);
+//                intent.putExtra("movieTitle",movieTitle);
+//                intent.putExtra("movieReleaseDate",movieReleaseDate);
+//                intent.putExtra("movieRating",movieRating);
+//                intent.putExtra("movieDescription",movieDescription);
+                context.startActivity(intent);
             }
         });
     }

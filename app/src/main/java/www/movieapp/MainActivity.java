@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import www.movieapp.Constant.Constant;
 import www.movieapp.adapter.MovieListAdapter;
 import www.movieapp.module.MovieDB;
 import www.movieapp.module.MovieDBJsonParse;
+import www.movieapp.utilities.DataBase;
 import www.movieapp.utilities.NetworkUtils;
 
 /**
@@ -36,25 +39,41 @@ public class MainActivity extends AppCompatActivity {
     List<MovieDB> movieDBList;
     String movieDbUrl;
     String movieSort;
+    DataBase dataBase;
+    Boolean CheckData=false;
+    String movieUrlQuery;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initObjects();
-        String movieUrlQuery = movieDbUrl + movieSort;
+         movieUrlQuery = movieDbUrl + movieSort;
         loadMovieData(movieUrlQuery);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-       if(!isOnline())
-       {
-           Intent intent=new Intent();
-           intent.setClass(this,OffLineActivity.class);
-           startActivity(intent);
-       }
+        if (!isOnline()) {
+            Intent intent = new Intent();
+            intent.setClass(this, OffLineActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            loadMovieData(movieUrlQuery);
+        }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(CheckData)
+        {
+            movieListAdapter = new MovieListAdapter(context, dataBase.getAllData());
+            recyclerViewMovieList.setAdapter(movieListAdapter);
+        }
+    }
+
     public boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -66,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
          movieDbUrl = Constant.END_POINT;
          movieSort = Constant.SORT_BY_POPULAR;
         context = this;
+        dataBase= new DataBase(context);
         movieDBList = new ArrayList<>();
         recyclerViewMovieList = (RecyclerView) findViewById(R.id.r_v_movie_db_list);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(context, 2);
@@ -128,6 +148,15 @@ public class MainActivity extends AppCompatActivity {
             movieSort = Constant.SORT_BY_POPULAR;
             String movieUrlQuery = movieDbUrl + movieSort;
             loadMovieData(movieUrlQuery);
+        }
+        else if(selectedItemId==R.id.movie_fav)
+        {
+            CheckData=true;
+            //String poster=dataBase.getAllData().get(0).getImagePath();
+            //Toast.makeText(context,"DataPoster="+dataBase.getAllData().get(0).getImagePath(),Toast.LENGTH_LONG).show();
+            movieListAdapter = new MovieListAdapter(context, dataBase.getAllData());
+            recyclerViewMovieList.setAdapter(movieListAdapter);
+
         }
         return super.onOptionsItemSelected(item);
     }
