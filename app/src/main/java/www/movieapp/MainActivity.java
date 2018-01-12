@@ -2,8 +2,10 @@ package www.movieapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,7 +16,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,10 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import www.movieapp.Constant.Constant;
+import www.movieapp.MovieDatabase.MovieContract;
 import www.movieapp.adapter.MovieListAdapter;
 import www.movieapp.module.MovieDB;
 import www.movieapp.module.MovieDBJsonParse;
-import www.movieapp.utilities.DataBase;
 import www.movieapp.utilities.NetworkUtils;
 
 /**
@@ -39,9 +40,9 @@ public class MainActivity extends AppCompatActivity {
     List<MovieDB> movieDBList;
     String movieDbUrl;
     String movieSort;
-    DataBase dataBase;
     Boolean CheckData=false;
     String movieUrlQuery;
+    Cursor cursor;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if(CheckData)
         {
-            movieListAdapter = new MovieListAdapter(context, dataBase.getAllData());
+            movieListAdapter = new MovieListAdapter(context, getAllData(cursor));
             recyclerViewMovieList.setAdapter(movieListAdapter);
         }
     }
@@ -85,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
          movieDbUrl = Constant.END_POINT;
          movieSort = Constant.SORT_BY_POPULAR;
         context = this;
-        dataBase= new DataBase(context);
         movieDBList = new ArrayList<>();
         recyclerViewMovieList = (RecyclerView) findViewById(R.id.r_v_movie_db_list);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(context, 2);
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String movieResponseData) {
             super.onPostExecute(movieResponseData);
-            Log.d("Data", movieResponseData);
+//            Log.d("Data", movieResponseData);
             if (movieResponseData != null) {
                 loadMovieAdapter(movieResponseData);
             }
@@ -152,12 +152,31 @@ public class MainActivity extends AppCompatActivity {
         else if(selectedItemId==R.id.movie_fav)
         {
             CheckData=true;
-            //String poster=dataBase.getAllData().get(0).getImagePath();
-            //Toast.makeText(context,"DataPoster="+dataBase.getAllData().get(0).getImagePath(),Toast.LENGTH_LONG).show();
-            movieListAdapter = new MovieListAdapter(context, dataBase.getAllData());
+            Uri uri = MovieContract.MovieEntry.CONTENT_URI;
+            final String[] projection = MovieContract.MovieEntry.MOVIE_COLUMNS;
+             cursor=getContentResolver().query(uri,projection,null,null,null);
+            movieListAdapter = new MovieListAdapter(context, getAllData(cursor));
             recyclerViewMovieList.setAdapter(movieListAdapter);
 
         }
         return super.onOptionsItemSelected(item);
+    }
+    public List<MovieDB> getAllData(Cursor cursor) {
+        List<MovieDB> movieDBList = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                MovieDB movieDB = new MovieDB();
+                String poster=cursor.getString(0).toString();
+                String movieId=cursor.getString(1);
+
+                movieDB.setMovieId(movieId);
+                movieDB.setMoviePosters(poster);
+                movieDBList.add(movieDB);
+            } while (cursor.moveToNext());
+        }
+        System.out.println("size" + movieDBList.size());
+        cursor.close();
+        return movieDBList;
     }
 }

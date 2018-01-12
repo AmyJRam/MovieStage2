@@ -1,6 +1,9 @@
 package www.movieapp;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,8 +38,7 @@ import www.movieapp.module.MovieReviewDB;
 import www.movieapp.module.MovieTrailerDBs;
 import www.movieapp.module.Movies;
 import www.movieapp.utilities.NetworkUtils;
-import www.movieapp.utilities.DataBase;
-
+import www.movieapp.MovieDatabase.MovieContract;
 /**
  * Created by Amy
  */
@@ -45,10 +47,10 @@ public class MovieDetailedView extends AppCompatActivity {
 
     public static String movieId = null;
     public static String movieDetailsUrl = null;
-    public static String movieReviewsUrl=null;
+    public static String movieReviewsUrl = null;
     public static String movieTrailerUrl = null;
     public static String movieCastAndCrewsUrl = null;
-    public static String apiKey = "?api_key="+ Constant.API_KEY;
+    public static String apiKey = "?api_key=" + Constant.API_KEY;
     List<MovieDetailsDB> movieDetailsDBs;
     List<MovieReviewDB> movieReviewsDBs;
     List<MovieCastCrewDB> movieCasstDBs;
@@ -61,12 +63,11 @@ public class MovieDetailedView extends AppCompatActivity {
     MovieCrewData movieCrewData;
     MovieTrailerData movieTrailerData;
     Movies movie;
-    DataBase db;
     public Context context;
     RecyclerView movieReview, movieCast, movieCrew, movieTrailer;
     TextView movieTitleText, movieReleaseDateText, movieBudgetText, movieRevenueText, movieReleaseStatusText;
     TextView movieVoteAverageText, movieDescriptionText, movieTagLineText, movieVoteCountUsers;
-    RatingBar movieRatingBar,movieSingleStarRatingBar;
+    RatingBar movieRatingBar, movieSingleStarRatingBar;
     ImageView movieImage, favoriteImage;
 
     @Override
@@ -92,30 +93,24 @@ public class MovieDetailedView extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                movie = new Movies();
-                movie.setID(movieDetailsDBs.get(0).getMovieTagId());
-               // Toast.makeText(context, "POster="+movieDetailsDBs.get(0).getMovieImage(), Toast.LENGTH_SHORT).show();
-                movie.setPosterPath(movieDetailsDBs.get(0).getMovieImage());
 
                 if (FavId) {
+                    deleteFavoriteFromDb(movieId);
 
-                    boolean check = db.deleteNonFavWatchMovie(movie.getID());
-                    if(check)
-                    {
+                  /*if (check) {
                         Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
 
                         favoriteImage.setImageResource(R.drawable.favorite_disable_normal);
 
-                    }
-                    else
-                    {
+                    } else {
                         Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
 
-                    }
+                    }*/
 
 
                 } else {
-                    Toast.makeText(context, "ID="+db.addMovie(movie), Toast.LENGTH_SHORT).show();
+                    insertFavoriteToDb();
+                    // Toast.makeText(context, "ID="+db.addMovie(movie), Toast.LENGTH_SHORT).show();
                 }
                 checkMovie(movieId);
             }
@@ -124,17 +119,22 @@ public class MovieDetailedView extends AppCompatActivity {
     }
 
     private void checkMovie(String id) {
-
-        Boolean check = db.checkMovie(id);
-        if (check) { //checks if movie does not existing in database
-            favoriteImage.setImageResource(R.drawable.favorite_enable_normal);
-            FavId=true;
-
-        }  else {
-            favoriteImage.setImageResource(R.drawable.favorite_disable_normal);
-            FavId=false;
+        Uri uri = MovieContract.MovieEntry.CONTENT_URI;
+        final String[] projection = MovieContract.MovieEntry.MOVIE_COLUMNS;
+        Boolean check=false;
+        Cursor cursor=getContentResolver().query(uri,projection,"movie_id=?",new String[]{movieId},null);
+            if(cursor.moveToFirst())
+            {
+                check=true;
             }
+        if (check) {
+            favoriteImage.setImageResource(R.drawable.favorite_enable_normal);
+            FavId = true;
 
+        } else {
+            favoriteImage.setImageResource(R.drawable.favorite_disable_normal);
+            FavId = false;
+        }
 
 
     }
@@ -148,8 +148,9 @@ public class MovieDetailedView extends AppCompatActivity {
         URL url = NetworkUtils.buildUrl(movieCastCrewUrl);
         new RequestMovieCastCrewdata().execute(url);
     }
-    public void laodMoviePostersData(String movieReviewsUrl){
-        URL url =NetworkUtils.buildUrl(movieReviewsUrl);
+
+    public void laodMoviePostersData(String movieReviewsUrl) {
+        URL url = NetworkUtils.buildUrl(movieReviewsUrl);
         new RequestMoviePostersdata().execute(url);
     }
 
@@ -172,8 +173,7 @@ public class MovieDetailedView extends AppCompatActivity {
         movieRatingBar = (RatingBar) findViewById(R.id.ratingBar2);
         movieImage = (ImageView) findViewById(R.id.movieImage);
         movieSingleStarRatingBar = (RatingBar) findViewById(R.id.movie_single_star_rating_bar);
-        movieReview=(RecyclerView)findViewById(R.id.rv_reviews);
-        db= new DataBase(MovieDetailedView.this);
+        movieReview = (RecyclerView) findViewById(R.id.rv_reviews);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         movieReview.setLayoutManager(layoutManager);
 
@@ -200,9 +200,9 @@ public class MovieDetailedView extends AppCompatActivity {
         setDataIntoLayoutFields(movieDetailsDBs);
     }
 
-    private void loadMoviePostersAdapter(String movieResponsePosterData){
+    private void loadMoviePostersAdapter(String movieResponsePosterData) {
 
-        movieReviewsDBs= MovieDBJsonParse.parseMoviePostersStringToJson(movieResponsePosterData);
+        movieReviewsDBs = MovieDBJsonParse.parseMoviePostersStringToJson(movieResponsePosterData);
         setPosterIntoLayoutFields(movieReviewsDBs);
 
     }
@@ -238,12 +238,13 @@ public class MovieDetailedView extends AppCompatActivity {
         movieCast.setAdapter(movieCastData);
     }
 
-    public void setPosterIntoLayoutFields(List<MovieReviewDB> movieReviewsDBs){
+    public void setPosterIntoLayoutFields(List<MovieReviewDB> movieReviewsDBs) {
 
         movieReviewData = new MovieReviewData(context, movieReviewsDBs);
         movieReview.setAdapter(movieReviewData);
 
     }
+
     //    Stting Data into the Text fields From the movieDetailsDBs List
     public void setDataIntoLayoutFields(List<MovieDetailsDB> movieDetailsDBs) {
         //Formatting the Numbers into Readable Form
@@ -263,11 +264,12 @@ public class MovieDetailedView extends AppCompatActivity {
         movieDescriptionText.setText(movieDetailsDBs.get(0).getMovieDescription().toString());
         movieVoteCountUsers.setText(NumberFormat.getIntegerInstance().format(VoteCountUsers) + " users");
         //float d = movieVoteAvg * 10;
-        movieRatingBar.setRating(Float.parseFloat(movieDetailsDBs.get(0).getMovieVoteAverage())/2);
-        movieSingleStarRatingBar.setRating(Float.parseFloat(movieDetailsDBs.get(0).getMovieVoteAverage())/10);
+        movieRatingBar.setRating(Float.parseFloat(movieDetailsDBs.get(0).getMovieVoteAverage()) / 2);
+        movieSingleStarRatingBar.setRating(Float.parseFloat(movieDetailsDBs.get(0).getMovieVoteAverage()) / 10);
 
         //movieRatingBar.setStepSize(d);
     }
+
 
     class RequestMovieCastCrewdata extends AsyncTask<URL, Void, String> {
 
@@ -295,17 +297,18 @@ public class MovieDetailedView extends AppCompatActivity {
         }
 
     }
-    class  RequestMoviePostersdata extends  AsyncTask<URL, Void, String>{
+
+    class RequestMoviePostersdata extends AsyncTask<URL, Void, String> {
 
         @Override
         protected String doInBackground(URL... urls) {
-            String movieReviewsResponseData=null;
-            URL url =urls[0];
+            String movieReviewsResponseData = null;
+            URL url = urls[0];
             try {
-                movieReviewsResponseData=NetworkUtils.getResponseFromMovieDb(url);
+                movieReviewsResponseData = NetworkUtils.getResponseFromMovieDb(url);
             } catch (IOException e) {
                 e.printStackTrace();
-                movieReviewsResponseData=e.getMessage();
+                movieReviewsResponseData = e.getMessage();
             }
 
 
@@ -315,7 +318,7 @@ public class MovieDetailedView extends AppCompatActivity {
         protected void onPostExecute(String movieResponsePosterData) {
             super.onPostExecute(movieResponsePosterData);
             Log.d("Data", movieResponsePosterData);
-            if (movieResponsePosterData!= null) {
+            if (movieResponsePosterData != null) {
                 loadMoviePostersAdapter(movieResponsePosterData);
             }
         }
@@ -373,5 +376,36 @@ public class MovieDetailedView extends AppCompatActivity {
                 loadMovieTrailerAdapter(movieResponseData);
             }
         }
+    }
+
+    private void insertFavoriteToDb() {
+
+        String path = movieDetailsDBs.get(0).getMovieImage();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, path);
+        contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movieId);
+
+        Uri uri = getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, contentValues);
+        Log.v("Inserting Error", uri.toString());
+        if (uri != null) {
+            Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
+        }
+
+
+    }
+
+
+    private void deleteFavoriteFromDb(String movieId) {
+
+        Uri uri = MovieContract.MovieEntry.CONTENT_URI;
+
+       // uri = uri.buildUpon().appendPath(movieId).build();
+        int taskDeleted = getContentResolver().delete(uri,  "movie_id=?",
+                new String[]{movieId});
+        Toast.makeText(getApplicationContext(),"Deleted="+taskDeleted,Toast.LENGTH_LONG).show();
+        Log.v("Deleting Error", String.valueOf(taskDeleted));
+
+
     }
 }

@@ -20,6 +20,11 @@
         </activity>
         <activity android:name=".MovieDetailedView"></activity>
         <activity android:name=".OffLineActivity"></activity>
+
+        <provider
+            android:name="www.movieapp.MovieDatabase.MovieContentProvider"
+            android:authorities="www.movieapp"
+            android:exported="false"/>
     </application>
 
 </manifest>

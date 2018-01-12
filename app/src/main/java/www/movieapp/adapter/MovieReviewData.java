@@ -5,15 +5,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import www.movieapp.Constant.Constant;
 import www.movieapp.R;
 import www.movieapp.module.MovieReviewDB;
 
@@ -61,8 +58,8 @@ public class MovieReviewData extends RecyclerView.Adapter<MovieReviewData.MovieV
 
         public MovieViewHolder(View itemView) {
             super(itemView);
-            textViewAuthor = itemView.findViewById(R.id.tv_author);
-            textViewContent = itemView.findViewById(R.id.tv_content);
+            textViewAuthor = itemView.findViewById(R.id.author_tv);
+            textViewContent = itemView.findViewById(R.id.content_tv);
 
         }
     }
