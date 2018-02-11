@@ -32,9 +32,13 @@ public class MovieContract {
 
 
         public static final String[] MOVIE_COLUMNS = {
-
+                COLUMN_TITLE,
                 COLUMN_POSTER_PATH,
+                COLUMN_SYNOPSIS,
+                COLUMN_RATING,
+                COLUMN_RELEASE_DATE,
                 COLUMN_MOVIE_ID
+
         };
 
 
