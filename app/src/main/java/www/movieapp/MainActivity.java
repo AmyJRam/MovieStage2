@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     Boolean CheckData=false;
     String movieUrlQuery;
     Cursor cursor;
-
+    boolean FavMovie=false;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +63,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(FavMovie) {
+            Uri uri = MovieContract.MovieEntry.CONTENT_URI;
+            final String[] projection = MovieContract.MovieEntry.MOVIE_COLUMNS;
+            cursor = getContentResolver().query(uri, projection, null, null, null);
+            movieListAdapter = new MovieListAdapter(context, getAllData(cursor));
+            recyclerViewMovieList.setAdapter(movieListAdapter);
+        }
+    }
 
     public boolean isOnline() {
         ConnectivityManager cm =
@@ -130,17 +141,19 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int selectedItemId = item.getItemId();
         if (selectedItemId == R.id.menu_sort_by_top_rated) {
+            FavMovie=false;
             movieSort = Constant.SORT_BY_TOP_RATED;
             String movieUrlQuery = movieDbUrl + movieSort;
             loadMovieData(movieUrlQuery);
         } else if (selectedItemId == R.id.menu_sort_by_popular) {
+            FavMovie=false;
             movieSort = Constant.SORT_BY_POPULAR;
             String movieUrlQuery = movieDbUrl + movieSort;
             loadMovieData(movieUrlQuery);
         }
         else if(selectedItemId==R.id.movie_fav)
         {
-            CheckData=true;
+            FavMovie=true;
             Uri uri = MovieContract.MovieEntry.CONTENT_URI;
             final String[] projection = MovieContract.MovieEntry.MOVIE_COLUMNS;
              cursor=getContentResolver().query(uri,projection,null,null,null);
@@ -167,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
                 movieDB.setMovieTitle(movieTitle);
                 movieDB.setMovieRating(movieRating);
                 movieDB.setMovieReleaseDate(movieRealseDate);
-                movieDB.setMovieReleaseDate(movieSynopsis);
+                movieDB.setMovieDescription(movieSynopsis);
 
                 movieDBList.add(movieDB);
             } while (cursor.moveToNext());
