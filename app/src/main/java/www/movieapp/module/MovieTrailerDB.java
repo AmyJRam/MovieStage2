@@ -4,7 +4,7 @@ package www.movieapp.module;
  * Created by Amy
  */
 
-public class MovieTrailerDBs {
+public class MovieTrailerDB {
     String key, trailerName, trailerType;
 
     public String getKey() {

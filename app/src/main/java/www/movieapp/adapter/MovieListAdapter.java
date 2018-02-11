@@ -2,11 +2,13 @@ package www.movieapp.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -40,30 +42,27 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
 
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
-        final MovieDB MovieDB = movieDBList.get(position);
-        final String moviePoster = MovieDB.getMoviePosters();
-        final String movieId = MovieDB.getMovieId();
 
+        MovieDB movieDB = movieDBList.get(position);
+        final String moviePoster = movieDB.getMoviePosters();
+        final String movieTitle = movieDB.getMovieTitle();
+        final String movieSynopsis = movieDB.getMovieDescription();
+        final String movieReleaseDate = movieDB.getMovieReleaseDate();
+        final String movieRating = movieDB.getMovieRating();
+        final String movieId = movieDB.getMovieId();
         Picasso.with(context).load(Constant.POSTER_PATH + moviePoster).into(holder.imageViewMoviePoster);
         holder.imageViewMoviePoster.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               /* Intent intentMovieDetailedView=new Intent();
+                Intent intentMovieDetailedView=new Intent();
+                intentMovieDetailedView.putExtra(Constant.MOVIE_ID,movieId);
                 intentMovieDetailedView.putExtra(Constant.MOVIE_TITLE,movieTitle);
                 intentMovieDetailedView.putExtra(Constant.MOVIE_IMAGE_POSTER,moviePoster);
                 intentMovieDetailedView.putExtra(Constant.MOVIE_SYNOPSIS,movieSynopsis);
                 intentMovieDetailedView.putExtra(Constant.MOVIE_RATING,movieRating);
                 intentMovieDetailedView.putExtra(Constant.MOVIE_ReleaseDate,movieReleaseDate);
                 intentMovieDetailedView.setClass(context, MovieDetailedView.class);
-                context.startActivity(intentMovieDetailedView);*/
-                Intent intent=new Intent(context, MovieDetailedView.class);
-                intent.putExtra("movieId",movieId);
-//                intent.putExtra("moviePoster",moviePoster);
-//                intent.putExtra("movieTitle",movieTitle);
-//                intent.putExtra("movieReleaseDate",movieReleaseDate);
-//                intent.putExtra("movieRating",movieRating);
-//                intent.putExtra("movieDescription",movieDescription);
-                context.startActivity(intent);
+                context.startActivity(intentMovieDetailedView);
             }
         });
     }
@@ -78,7 +77,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.Movi
 
         public MovieViewHolder(View itemView) {
             super(itemView);
-            imageViewMoviePoster = itemView.findViewById(R.id.imageView_movie_poster);
+            imageViewMoviePoster = (ImageView) itemView.findViewById(R.id.imageView_movie_poster);
         }
     }
 }

@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
-
 import java.util.List;
 
 import www.movieapp.R;
@@ -18,11 +17,11 @@ import www.movieapp.module.MovieReviewDB;
  * Created by Amy
  */
 
-public class MovieReviewData extends RecyclerView.Adapter<MovieReviewData.MovieViewHolder> {
+public class MovieReviewAdapter extends RecyclerView.Adapter<MovieReviewAdapter.MovieViewHolder> {
     List<MovieReviewDB> moviePostersList;
     Context context;
 
-    public MovieReviewData(Context context, List<MovieReviewDB> moviePostersList) {
+    public MovieReviewAdapter(Context context, List<MovieReviewDB> moviePostersList) {
         this.context = context;
         this.moviePostersList= moviePostersList;
 
@@ -58,8 +57,8 @@ public class MovieReviewData extends RecyclerView.Adapter<MovieReviewData.MovieV
 
         public MovieViewHolder(View itemView) {
             super(itemView);
-            textViewAuthor = itemView.findViewById(R.id.author_tv);
-            textViewContent = itemView.findViewById(R.id.content_tv);
+            textViewAuthor = (TextView)itemView.findViewById(R.id.author_tv);
+            textViewContent = (TextView)itemView.findViewById(R.id.content_tv);
 
         }
     }

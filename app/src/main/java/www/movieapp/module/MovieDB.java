@@ -9,19 +9,10 @@ public class MovieDB {
     String movieRating;
     String movieDescription;
     String movieReleaseDate;
-    String movieBudget;
-    String movieRevenue;
-    String movieStatus;
-    String movieWatchListImgae;
     String movieFavListImage;
     String moviePosters;
     String movieId;
     String movieTrailers;
-    String movieCast;
-    String movieCrew;
-    String imagePath;
-    String movieVoteCount;
-    String moviePopularity;
 
     int movieFavorite;
     int movieWatchList;
@@ -50,21 +41,9 @@ public class MovieDB {
         this.movieId = movieId;
     }
 
-    public String getMoviePopularity() {
-        return moviePopularity;
-    }
 
-    public void setMoviePopularity(String moviePopularity) {
-        this.moviePopularity = moviePopularity;
-    }
 
-    public String getMovieVoteCount() {
-        return movieVoteCount;
-    }
 
-    public void setMovieVoteCount(String movieVoteCount) {
-        this.movieVoteCount = movieVoteCount;
-    }
 
     public String getMovieDescription() {
         return movieDescription;
@@ -72,38 +51,6 @@ public class MovieDB {
 
     public void setMovieDescription(String movieDescription) {
         this.movieDescription = movieDescription;
-    }
-
-    public String getMovieBudget() {
-        return movieBudget;
-    }
-
-    public void setMovieBudget(String movieBudget) {
-        this.movieBudget = movieBudget;
-    }
-
-    public String getMovieRevenue() {
-        return movieRevenue;
-    }
-
-    public void setMovieRevenue(String movieRevenue) {
-        this.movieRevenue = movieRevenue;
-    }
-
-    public String getMovieStatus() {
-        return movieStatus;
-    }
-
-    public void setMovieStatus(String movieStatus) {
-        this.movieStatus = movieStatus;
-    }
-
-    public String getMovieWatchListImgae() {
-        return movieWatchListImgae;
-    }
-
-    public void setMovieWatchListImgae(String movieWatchListImgae) {
-        this.movieWatchListImgae = movieWatchListImgae;
     }
 
     public String getMovieFavListImage() {
@@ -130,22 +77,6 @@ public class MovieDB {
         this.movieTrailers = movieTrailers;
     }
 
-    public String getMovieCast() {
-        return movieCast;
-    }
-
-    public void setMovieCast(String movieCast) {
-        this.movieCast = movieCast;
-    }
-
-    public String getMovieCrew() {
-        return movieCrew;
-    }
-
-    public void setMovieCrew(String movieCrew) {
-        this.movieCrew = movieCrew;
-    }
-
     public String getMovieReleaseDate() {
         return movieReleaseDate;
     }
@@ -153,15 +84,6 @@ public class MovieDB {
     public void setMovieReleaseDate(String movieReleaseDate) {
         this.movieReleaseDate = movieReleaseDate;
     }
-
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
-
     public String getMovieTitle() {
         return movieTitle;
     }

@@ -16,4 +16,8 @@ public class Constant {
     public static String MOVIE_RATING="movieRating";
     public static String MOVIE_IMAGE_POSTER="movieImagePoster";
     public static String MOVIE_ReleaseDate="movieReleaseDate";
+    public static String MOVIE_ID="movieID";
+    public static String YOUTUBE_API="AIzaSyChxPW6ZSUK596gtPzdFGhkJ_BNkOFgcGM";
+
+
 }

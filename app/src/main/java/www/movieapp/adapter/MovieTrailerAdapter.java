@@ -14,17 +14,17 @@ import android.widget.TextView;
 import java.util.List;
 
 import www.movieapp.R;
-import www.movieapp.module.MovieTrailerDBs;
+import www.movieapp.module.MovieTrailerDB;
 
 /**
  * Created by Amy
  */
 
-public class MovieTrailerData extends RecyclerView.Adapter<MovieTrailerData.MovieViewHolder> {
-    List<MovieTrailerDBs> movieTrailerList;
+public class MovieTrailerAdapter extends RecyclerView.Adapter<MovieTrailerAdapter.MovieViewHolder> {
+    List<MovieTrailerDB> movieTrailerList;
     Context context;
 
-    public MovieTrailerData(Context context, List<MovieTrailerDBs> movieTrailerList) {
+    public MovieTrailerAdapter(Context context, List<MovieTrailerDB> movieTrailerList) {
         this.context = context;
         this.movieTrailerList = movieTrailerList;
 
@@ -42,10 +42,9 @@ public class MovieTrailerData extends RecyclerView.Adapter<MovieTrailerData.Movi
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
 
-        final MovieTrailerDBs movieTrailerDBs = movieTrailerList.get(position);
-        final String movieTrailerKey = movieTrailerDBs.getKey();
-        final String movieTrailerName = movieTrailerDBs.getTrailerName();
-        final String movieTrailerType = movieTrailerDBs.getTrailerType();
+        final MovieTrailerDB movieTrailerDB = movieTrailerList.get(position);
+        final String movieTrailerKey = movieTrailerDB.getKey();
+        final String movieTrailerName = movieTrailerDB.getTrailerName();
 
         holder.movieTrailerName.setText(movieTrailerName);
         holder.movieTrailerName.setOnClickListener(new View.OnClickListener() {
@@ -55,7 +54,6 @@ public class MovieTrailerData extends RecyclerView.Adapter<MovieTrailerData.Movi
                 context.startActivity(intent);
             }
         });
-        //Picasso.with(context).load(Constant.POSTER_PATH + moviePoster).into(holder.imageViewMoviePoster);
 
     }
 
@@ -69,7 +67,7 @@ public class MovieTrailerData extends RecyclerView.Adapter<MovieTrailerData.Movi
 
         public MovieViewHolder(View itemView) {
             super(itemView);
-            movieTrailerName = itemView.findViewById(R.id.trailer_name);
+            movieTrailerName = (TextView)itemView.findViewById(R.id.trailer_name);
         }
     }
 }

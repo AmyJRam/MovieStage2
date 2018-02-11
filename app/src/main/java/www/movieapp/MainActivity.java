@@ -60,20 +60,9 @@ public class MainActivity extends AppCompatActivity {
             intent.setClass(this, OffLineActivity.class);
             startActivity(intent);
             finish();
-        } else {
-            loadMovieData(movieUrlQuery);
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(CheckData)
-        {
-            movieListAdapter = new MovieListAdapter(context, getAllData(cursor));
-            recyclerViewMovieList.setAdapter(movieListAdapter);
-        }
-    }
 
     public boolean isOnline() {
         ConnectivityManager cm =
@@ -167,11 +156,19 @@ public class MainActivity extends AppCompatActivity {
         if (cursor.moveToFirst()) {
             do {
                 MovieDB movieDB = new MovieDB();
-                String poster=cursor.getString(0).toString();
-                String movieId=cursor.getString(1);
-
+                String movieTitle=cursor.getString(0);
+                String poster=cursor.getString(1);
+                String movieSynopsis=cursor.getString(2);
+                String movieRating=cursor.getString(3);
+                String movieRealseDate=cursor.getString(4);
+                String movieId=cursor.getString(5);
                 movieDB.setMovieId(movieId);
                 movieDB.setMoviePosters(poster);
+                movieDB.setMovieTitle(movieTitle);
+                movieDB.setMovieRating(movieRating);
+                movieDB.setMovieReleaseDate(movieRealseDate);
+                movieDB.setMovieReleaseDate(movieSynopsis);
+
                 movieDBList.add(movieDB);
             } while (cursor.moveToNext());
         }
